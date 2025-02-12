@@ -90,11 +90,15 @@ public class exercicio7 {
             case "HRC":
                 if (freq < 0.50) {
                     System.out.println("Reprovado");
+                    break;
                 }
+                return;
             default:
                 if (freq < 0.40) {
                     System.out.println("Reprovado");
+                    break;
                 }
+                return;
         }
         System.out.println("Digite sua nota:");
         int nota = sc.nextInt();
@@ -110,7 +114,6 @@ public class exercicio7 {
         } else {
             System.out.println("o aluno" + nome + "esta reprovado");
         }
-
 
 
     }
