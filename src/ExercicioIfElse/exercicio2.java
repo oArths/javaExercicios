@@ -1,3 +1,5 @@
+package ExercicioIfElse;
+
 import java.util.Scanner;
 
 //Pergunte o salário de um funcionário qualquer e verifique se ele paga imposto de renda.

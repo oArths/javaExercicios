@@ -1,3 +1,5 @@
+package ExercicioIfElse;
+
 import java.util.Scanner;
 
 //Crie um programa que, pergunte a nota de um aluno e verifique se ele passou na nota de corte (acima de 50)
