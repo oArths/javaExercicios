@@ -22,6 +22,6 @@ public class exercicio6 {
         carrefaur.add(new Produto(12.3, "banana"));
 
 
-        System.out.println(produtos);
+        System.out.println(almarti);
     }
 }
