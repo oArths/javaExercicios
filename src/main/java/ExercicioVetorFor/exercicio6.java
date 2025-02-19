@@ -1,9 +1,10 @@
 package ExercicioVetorFor;
 
 import com.google.gson.Gson;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class exercicio6 {
     static class Produto {
@@ -21,18 +22,28 @@ public class exercicio6 {
         ArrayList<Produto> carrefaur = new ArrayList<>();
         ArrayList<Produto> almarti = new ArrayList<>();
         Gson gson = new Gson();
-        // Scanner sc = new Scanner(System.in);
         for (int i = 1; i <= 5; i++) {
-            String name = "produto" + i;
-            double price = i * 2;
-            DecimalFormat formato = new DecimalFormat("#.##");
-            carrefaur.add(new Produto(Double.parseDouble(formato.format(price)), name));
+            String name = "produto " + i;
+            double priceCa = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);;
+            carrefaur.add(new Produto(priceCa, name));
+            double priceAl = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);;
+            almarti.add(new Produto(priceAl , name));
         }
 
-        for (Produto produto : carrefaur) {
+        for (int i = 0; i <= 4; i++) {
+            DecimalFormat formato = new DecimalFormat("#.00");
+            Double carrefurPreco = carrefaur.get(i).preco;
+            Double almartiPreco = almarti.get(i).preco;
+            if (carrefurPreco > almartiPreco) {
+                System.out.println("O " + carrefaur.get(i).nome + "Custa R$ " + formato.format(carrefaur.get(i).preco) + " sendo mais barato no Carrefur");
+            } else if (carrefurPreco < almartiPreco) {
+                System.out.println("O " + almarti.get(i).nome + "Custa R$ " + formato.format(almarti.get(i).preco) + " sendo mais barato no Almarti");
+            } else {
+                System.out.println("O " + carrefaur.get(i).nome + " e " + almarti.get(i).nome + " custam o mesmo valor: R$ " + formato.format(carrefaur.get(i).preco) + ".");
+            }
+           // String json = gson.toJson(carrefaur.get(i));
+           // System.out.println(json);
 
-            String json = gson.toJson(produto);
-            System.out.println(json);
         }
     }
 }
