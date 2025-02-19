@@ -1,6 +1,6 @@
 package ExercicioVetorFor;
 
-//import com.google.gson.Gson;
+import com.google.gson.Gson;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -35,3 +35,4 @@ public class exercicio6 {
             System.out.println(json);
         }
     }
+}
