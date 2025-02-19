@@ -24,9 +24,9 @@ public class exercicio6 {
         Gson gson = new Gson();
         for (int i = 1; i <= 5; i++) {
             String name = "produto " + i;
-            double priceCa = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);;
+            double priceCa = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);
             carrefaur.add(new Produto(priceCa, name));
-            double priceAl = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);;
+            double priceAl = ThreadLocalRandom.current().nextDouble(i * Math.random(), i * Math.random() * 10);
             almarti.add(new Produto(priceAl , name));
         }
 
