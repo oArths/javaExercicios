@@ -14,16 +14,16 @@ public class bancoMetodos {
         String nome;
         String cpf;
         String senha;
-        Double saldo;
-        Double divida;
+        double saldo;
+        double divida;
         int contaNumero;
 
-        public Usuario(String nome, String senha, String cpf, Double saldo, Double divida, Integer contaNumero) {
+        public Usuario(String nome, String senha, String cpf, double saldo, double divida, int contaNumero) {
             this.nome = nome;
             this.senha = senha;
             this.cpf = cpf;
             this.saldo = saldo;
-            this.divida = (divida != null && divida >= 0) ? divida : 0.0;
+            this.divida = (divida > 0) ? divida : 0.0;
             this.contaNumero = contaNumero;
 
         }
@@ -53,12 +53,14 @@ public class bancoMetodos {
 
     }
 
+
     public static void Cadastro(ArrayList<Usuario> usuarios) {
 
         Scanner sc = new Scanner(System.in);
         String nome, cpf, clearCpf, senha;
         double saldo;
         int contaNumero;
+        System.out.println("CADASTRO:");
         while (true) {
             System.out.println("Digite o nome do usuario: ");
             nome = sc.nextLine();
@@ -82,7 +84,7 @@ public class bancoMetodos {
         while (true) {
             System.out.println("Digite o numero de CPF: ");
             cpf = sc.nextLine();
-            clearCpf = cpf.replaceAll("[^0-9]", "");
+                clearCpf = cpf.replaceAll("[^0-9]", "");
             if (clearCpf.length() != 11) {
                 System.out.println("Digite um CPF valido");
             } else {
@@ -95,8 +97,7 @@ public class bancoMetodos {
         Random gerador = new Random();
         contaNumero = gerador.nextInt((9999 - 1000) + 1) + 1000;
         usuarios.add(new Usuario(nome, senha, cpf, saldo, 0.0, contaNumero));
-        String[] args = {};
-        main(args);
+        Login(usuarios);
     }
 
     public static void Login(ArrayList<Usuario> usuarios) {
@@ -106,7 +107,7 @@ public class bancoMetodos {
             boolean userEncontrado = false;
             boolean senhaCorreta = false;
             int index = -1;
-
+            System.out.println("LOGIN:");
             System.out.println("Digite o nome do usuario: ");
             String nome = sc.nextLine();
             System.out.println("Digite sua senha: ");
@@ -124,8 +125,7 @@ public class bancoMetodos {
             }
             if (userEncontrado && senhaCorreta) {
                 System.out.println("Login efetuado");
-
-                Conta(index, usuarios.get(index), usuarios);
+                  Conta(index, usuarios.get(index), usuarios);
                 break;
             } else {
                 tentativa++;
@@ -141,56 +141,93 @@ public class bancoMetodos {
         }
     }
 
+    public static <T> int findUser(ArrayList<Usuario> usuarios, String itemComparation, T itemFind) {
+        int index = -1;
+        for (int i = 0; i < usuarios.size(); i++) {
+            Usuario usuario = usuarios.get(i);
+            try {
+                Field campo = Usuario.class.getDeclaredField(itemComparation);
+                Object valorCampo = campo.get(usuario);
+
+                if (valorCampo != null) {
+                    if (valorCampo instanceof Number) {
+
+                        if (((Number) valorCampo).doubleValue() == ((Number) itemFind).doubleValue()) {
+                            index = i;
+                            break;
+                        }
+                    } else {
+
+                        if (valorCampo.equals(itemFind)) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return index;
+    }
+
     public static void Conta(int index, Usuario usuario, ArrayList<Usuario> usuarios) {
 
         Scanner sc = new Scanner(System.in);
-        System.out.println("O que deseja fazer?\n 1 - Tranferencia para outro usuario\n 2 - Emprestimo\n 3 - Consultar Saldo\n 4 - Sair ");
-        int opc = sc.nextInt();
-        if (opc == 1) {
-            System.out.println("Digite o valor a ser tranferido: ");
-            double valor = sc.nextDouble();
-            if (usuario.saldo < valor) {
-                System.out.println("Saldo insuficiente, Deseja fazer um emprestimo?\n 1 - Sim\n 2 - Não e Sair ");
-                opc = sc.nextInt();
-                if (opc != 1) {
-                    System.exit(0);
+        int opc = 0;
+        while (opc != 4) {
+            System.out.println("O que deseja fazer?\n 1 - Tranferencia para outro usuario\n 2 - Emprestimo\n 3 - Consultar Saldo\n 4 - Sair ");
+            opc = sc.nextInt();
+            if (opc == 1) {
+                System.out.println("Digite o valor a ser tranferido: ");
+                double valor = sc.nextDouble();
+                if (usuario.saldo < valor) {
+                    System.out.println("Saldo insuficiente, Deseja fazer um emprestimo?\n 1 - Sim\n 2 - Não e Sair ");
+                    opc = sc.nextInt();
+                    if (opc != 1) {
+                        System.exit(0);
+                    }
+                    Emprestimo(index, usuario, usuarios);
+
                 }
-                Emprestimo(index, usuario, usuarios);
+                int reciveUser, userIndex;
 
-            }
-            int reciveUser;
-            int reciveIndex = -1;
-            while (true) {
                 while (true) {
+                    while (true) {
 
-                    System.out.println("Digite o numero da conta do usuario que ira receber: ");
-                    reciveUser = sc.nextInt();
-                    String reciveUserConvert = Integer.toString(reciveUser);
-                    if (reciveUserConvert.length() != 5) {
-                        System.out.println("Digite um numero de conta valido");
+                        System.out.println("Digite o numero da conta do usuario que ira receber: ");
+                        reciveUser = sc.nextInt();
+                        String reciveUserConvert = Integer.toString(reciveUser);
+                        if (reciveUserConvert.length() != 5) {
+                            System.out.println("Digite um numero de conta valido");
+                        } else {
+                            break;
+                        }
+                    }
+
+                    userIndex = findUser(usuarios, "contaNumero", reciveUser);
+
+                    if (userIndex == -1) {
+                        System.out.println("Usuario não encontrado ");
                     } else {
                         break;
                     }
+
                 }
+                Usuario usuarioPay =usuarios.get(index);
+                usuarioPay.saldo = usuarioPay.saldo - valor;
+                Usuario usuarioRecive = usuarios.get(userIndex);
+                usuarioRecive.saldo = usuarioRecive.saldo + valor;
+                System.out.println("Envio de R$ " + valor + " finalizado com sucesso!");
 
 
-                for (int i = 0; i < usuarios.size(); i++) {
-                    if (usuarios.get(i).contaNumero == reciveUser) {
-                        reciveIndex = i;
-                        break;
-                    }
-                }
-                if (reciveIndex == -1) {
-                    System.out.println("Usuario não encontrado");
-                } else {
-                    break;
-                }
+            } else if (opc == 2) {
+                Emprestimo(index, usuario, usuarios);
+            } else if (opc == 3) {
+                System.out.println("Seu saldo é R$" + usuario.saldo + " \nE sua divida é de R$" + usuario.divida+"\n");
+
             }
-            Usuario usuarioRecive = usuarios.get(reciveIndex);
-            usuarioRecive.saldo = usuarioRecive.saldo + valor;
-            System.out.println("Envio de R$ " + usuarioRecive.saldo + " finalizado com sucesso!");
-
-
         }
     }
 
@@ -206,40 +243,5 @@ public class bancoMetodos {
         System.out.println("Emprestimo de R$ " + empres + " efetuado com sucesso!");
     }
 
-    public <T> int FindUser(ArrayList<Usuario> usuarios, String itemComparation, T itemFind) {
-        int index = -1;
-        for (int i = 0; i < usuarios.size(); i++) {
-            Usuario usuario = usuarios.get(i);
-            try {
-                Field campo = Usuario.class.getDeclaredField(itemComparation);
-                Object valorCampo = campo.get(usuario);
 
-
-                if (valorCampo != null && valorCampo == itemFind) {
-                    index = i;
-                    break;
-                }
-
-                /*if (valorCampo != null) {
-                    if (valorCampo instanceof Number) {
-                        // Se for um número (int, double, etc.), comparamos usando ==
-                        if (((Number) valorCampo).doubleValue() == ((Number) itemFind).doubleValue()) {
-                            index = i;
-                            break;
-                        }
-                    } else {
-                        // Para objetos (como String), usamos equals()
-                        if (valorCampo.equals(itemFind)) {
-                            index = i;
-                            break;
-                        }
-                    }
-                }*/
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return index;
-    }
 }
