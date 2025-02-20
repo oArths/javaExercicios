@@ -2,6 +2,7 @@ package ExercicioBanco;
 
 import org.example.Main;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -143,32 +144,34 @@ public class bancoMetodos {
     public static void Conta(int index, Usuario usuario, ArrayList<Usuario> usuarios) {
 
         Scanner sc = new Scanner(System.in);
-        System.out.println("O que deseja fazer?\n 1 - Tranferencia para outro usuario\n 2 - Emprestimo\n 3 - Sair ");
+        System.out.println("O que deseja fazer?\n 1 - Tranferencia para outro usuario\n 2 - Emprestimo\n 3 - Consultar Saldo\n 4 - Sair ");
         int opc = sc.nextInt();
         if (opc == 1) {
             System.out.println("Digite o valor a ser tranferido: ");
             double valor = sc.nextDouble();
             if (usuario.saldo < valor) {
-                System.out.println("Saldo insuficiente, Deseja fazer um emprestimo?\n 1 - Sim\n 2 - Não ");
+                System.out.println("Saldo insuficiente, Deseja fazer um emprestimo?\n 1 - Sim\n 2 - Não e Sair ");
                 opc = sc.nextInt();
                 if (opc != 1) {
                     System.exit(0);
                 }
-                System.out.println("Digite o valor do Emprestimo: ");
-                double empres = sc.nextDouble();
-                if (empres > usuario.divida || empres > 100000) {
-                    System.out.println("Não é possivel fazer um emrestimo maior que a divida que você ja detem ou maior que R$ 10.0000,00");
-                    System.exit(0);
-                }
-                usuarios.get(index).saldo = usuario.saldo + empres;
-                System.out.println("Emprestimo de R$ " + empres + " efetuado com sucesso!");
+                Emprestimo(index, usuario, usuarios);
+
             }
             int reciveUser;
             int reciveIndex = -1;
             while (true) {
+                while (true) {
 
-                System.out.println("Digite o numero da conta do usuario que ira receber: ");
-                reciveUser = sc.nextInt();
+                    System.out.println("Digite o numero da conta do usuario que ira receber: ");
+                    reciveUser = sc.nextInt();
+                    String reciveUserConvert = Integer.toString(reciveUser);
+                    if (reciveUserConvert.length() != 5) {
+                        System.out.println("Digite um numero de conta valido");
+                    } else {
+                        break;
+                    }
+                }
 
 
                 for (int i = 0; i < usuarios.size(); i++) {
@@ -189,5 +192,54 @@ public class bancoMetodos {
 
 
         }
+    }
+
+    public static void Emprestimo(int index, Usuario usuario, ArrayList<Usuario> usuarios) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Digite o valor do Emprestimo: ");
+        double empres = sc.nextDouble();
+        if (empres > usuario.divida || empres > 100000) {
+            System.out.println("Não é possivel fazer um emrestimo maior que a divida que você ja detem ou maior que R$ 10.0000,00");
+            System.exit(0);
+        }
+        usuarios.get(index).saldo = usuario.saldo + empres;
+        System.out.println("Emprestimo de R$ " + empres + " efetuado com sucesso!");
+    }
+
+    public <T> int FindUser(ArrayList<Usuario> usuarios, String itemComparation, T itemFind) {
+        int index = -1;
+        for (int i = 0; i < usuarios.size(); i++) {
+            Usuario usuario = usuarios.get(i);
+            try {
+                Field campo = Usuario.class.getDeclaredField(itemComparation);
+                Object valorCampo = campo.get(usuario);
+
+
+                if (valorCampo != null && valorCampo == itemFind) {
+                    index = i;
+                    break;
+                }
+
+                /*if (valorCampo != null) {
+                    if (valorCampo instanceof Number) {
+                        // Se for um número (int, double, etc.), comparamos usando ==
+                        if (((Number) valorCampo).doubleValue() == ((Number) itemFind).doubleValue()) {
+                            index = i;
+                            break;
+                        }
+                    } else {
+                        // Para objetos (como String), usamos equals()
+                        if (valorCampo.equals(itemFind)) {
+                            index = i;
+                            break;
+                        }
+                    }
+                }*/
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return index;
     }
 }
